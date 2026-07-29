@@ -3,16 +3,8 @@ const dns = require("dns");
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 const emailDomains = require("disposable-email-domains");
 
-// ===================== PASSWORD VALIDATION ======================= \\
-// ================================================================= \\
-
-/**
- * @description Registers a new user to app
- * @param {string} email - User's email address
- * @param {string} password - Plain text password, hashed before storage
- * @return {Promise<UUID>} - Newly created user ID
- * @throws {Error} - If email already exists
- */
+// ===================== EMAIL VALIDATION ======================= \\
+// ============================================================== \\
 
 /**
  * @description Validate email
@@ -55,7 +47,6 @@ async function validateEmail(email)
     }
     catch (error)
     {
-        console.log(error);
         return {valid: false, message: "Invalid email address"};
     }
 

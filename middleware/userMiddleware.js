@@ -1,4 +1,5 @@
 const { validateEmail } = require("../validators/emailValidator");
+const { validateUsername } = require("../validators/usernameValidator");
 const { validatePassword, checkPwnedPassword } = require("../validators/passwordValidator");
 
 
@@ -8,11 +9,11 @@ const { validatePassword, checkPwnedPassword } = require("../validators/password
  */
 async function validateRegistration(req, res, next)
 {
-    const {email, password} = req.body;
+    const {email, username, password} = req.body;
 
-    if (!email || !password)
+    if (!email || !username || !password)
     {
-        return res.status(400).json({error: "Email and password required"});
+        return res.status(400).json({error: "Email, username and password required"});
     }
 
     try
@@ -28,7 +29,21 @@ async function validateRegistration(req, res, next)
     }
     catch (error)
     {
-        console.log(error);
+        return res.status(500).json({error: "Registration failed"});
+    }
+
+    try
+    {
+        const usernameResult = await validateUsername(username);
+        if (!usernameResult.valid)
+        {
+            return res.status(400).json({error: usernameResult.message});
+        }
+
+        req.body.username = usernameResult.sanitized;
+    }
+    catch (error)
+    {
         return res.status(500).json({error: "Registration failed"});
     }
 
@@ -42,7 +57,6 @@ async function validateRegistration(req, res, next)
     }
     catch (error)
     {
-        console.log(error);
         return res.status(500).json({error: "Registration failed"});
     }
 
@@ -56,7 +70,6 @@ async function validateRegistration(req, res, next)
     }
     catch (error)
     {
-        console.log(error);
         return res.status(500).json({error: "Registration failed"});
     }
 
@@ -89,8 +102,7 @@ async function validateLogin(req, res, next)
     }
     catch (error)
     {
-        console.log(error);
-        res.status(500).json({error: "Login failed"});
+        return res.status(500).json({error: "Login failed"});
     }
 
     next();

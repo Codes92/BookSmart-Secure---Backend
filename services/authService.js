@@ -11,29 +11,41 @@ const argon2 = require("argon2");
 // JWT for returning login token
 const jwt = require("jsonwebtoken");
 
-// Import User model to contact database
+// Import models to contact database
 const User = require("../models/userModel");
+const UserPreferences = require("../models/userPreferencesModel");
+const Profile = require("../models/profileModel");
+const Goal = require("../models/goalModel");
+const UserBook = require("../models/userBookModel");
 
 /**
  * @description Complete user registration
  * @param {string} email - email address for registration
+ * @param {string} username - Username for registration
  * @param {string} password - password for registration
  * @returns {{token: string, userId: string}}
  */
-async function registerUser(email, password)
+async function registerUser(email, username, password)
 {
-    // Check whether user exists
+    // Check whether user exists (email is already registered)
     if (await User.findByEmail(email))
     {
         throw new Error("Register a different email address");
     }
+
+    // Check whether username is taken
+    if (await User.findByUsername(username))
+    {
+        throw new Error("Choose a different username");
+    }
+
     try
     {
         // Hash password
         const hash = await argon2.hash(password);
 
         // Call user model to database
-        const newUser = await User.createUser(email, hash);
+        const newUser = await User.createUser(email, username, hash);
         // Create token upon registration to enable immediate login (improved UX)
         const token = jwt.sign({userId: newUser.user_id}, process.env.JWT_SECRET, {expiresIn: '1h'});
 
@@ -99,5 +111,56 @@ async function loginUser(email, password)
     }
 }
 
+/**
+ * @description 
+ */
+async function changePassword(userId, password, newPassword)
+{
+    try
+    {
+        const user = await User.findById(userId);
+
+        // Compare passwords
+        const match = await argon2.verify(user.password_hash, password);
+        if (!match)
+        {
+            throw new Error("Invalid password");
+        }
+
+        const newPasswordHash = await argon2.hash(newPassword);
+
+        await User.changePasswordById(userId, newPasswordHash);
+    }
+    catch (error)
+    {
+        if (error.message === "Invalid password")
+        {
+            throw error;
+        }
+        throw new Error("New password creation failed");
+    }
+}
+
+/**
+ * @description Delete user account
+ * @param {string} userId
+ */
+async function deleteUserAccount(userId)
+{
+    try
+    {
+        // Delete user account
+        const deletedAccount = await User.deleteAccount(userId);
+
+        // No need to return anything
+    }
+    catch (error)
+    {
+        throw new Error("Deletion failed");
+    }
+}
+
 module.exports = {registerUser,
-                  loginUser}
+                  loginUser,
+                  changePassword,
+                  deleteUserAccount}

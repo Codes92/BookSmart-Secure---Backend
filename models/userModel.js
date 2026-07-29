@@ -14,18 +14,19 @@ class User
     /**
      * @description Insert a new user to database
      * @param {string} email - Email address
+     * @param {string} username - Username
      * @param {string} password_hash - Password
      * @return {object} - Return new user ID
      */
-    static async createUser(email, password_hash)
+    static async createUser(email, username, password_hash)
     {
         try
         {
             // Return only the user ID (RETURNING * exposes too much)
             const result = await pool.query(
                 // Ensure to prevent SQL injection with $1, $2 etc...
-                `INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING user_id`,
-                [email, password_hash]
+                `INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3) RETURNING user_id`,
+                [email, username, password_hash]
             );
             return result.rows[0];
         }
@@ -34,6 +35,10 @@ class User
             // PostgreSQL unique violation code (something added twice)
             if (error.code === "23505")
             {
+                if (error.constraint === "users_username_unique")
+                {
+                    throw new Error("Username already in use");
+                }
                 throw new Error("Email already in use");
             }
             throw error; // Re-throw other errors   
@@ -62,7 +67,7 @@ class User
 
     /**
      * @description Find a user via user ID
-     * @param {string} userId - userId
+     * @param {string} userId - User ID
      * @return {object} - Return user ID and password hash
      */
     static async findById(userId)
@@ -76,7 +81,27 @@ class User
         }
         catch (error)
         {
-            throw new Error("Database error during email lookup");
+            throw new Error("Database error during ID lookup");
+        }
+    }
+
+    /**
+     * @description Find a user by username
+     * @param {string} username - Username
+     * @returns {object} - Return user ID and password hash
+     */
+    static async findByUsername(username)
+    {
+        try
+        {
+            const result = await pool.query(
+                `SELECT user_id, password_hash FROM users WHERE username = $1`, [username]
+            );
+            return result.rows[0] || null;
+        }
+        catch (error)
+        {
+            throw new Error("Database error during username lookup");
         }
     }
 

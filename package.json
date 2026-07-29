@@ -10,11 +10,16 @@
   "description": "",
   "dependencies": {
     "argon2": "^0.44.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "countries-list": "^3.3.0",
     "disposable-email-domains": "^1.0.62",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
     "hibp": "^15.2.1",
+    "i18n-iso-countries": "^7.14.0",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
     "validator": "^13.15.35"
