@@ -20,7 +20,8 @@ router.post("/register", registrationLimiter, validateRegistration, async (req, 
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            // secure: process.env.NODE_ENV === "production",
+            secure: true,
             sameSite: "lax",
             maxAge: 60 * 60 * 1000 // 1 hour
         });
@@ -43,7 +44,7 @@ router.post('/login', validateLogin, async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             sameSite: "lax",
             maxAge: 60 * 60 * 1000 // 1 hour
         });
