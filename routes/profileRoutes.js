@@ -4,10 +4,10 @@ const router = express.Router();
 
 const {isLoggedIn} = require("../middleware/authMiddleware");
 const {validateUserProfile, validateUpdateProfile} = require("../middleware/profileMiddleware");
-
 const {createUserProfile, getUserProfile, updateUserProfile, deleteUserProfile} = require("../services/profileService");
+const { profileCreateLimiter } = require("../middleware/rateLimiter");
 
-router.post("/", isLoggedIn, validateUserProfile, async (req, res) => {
+router.post("/", isLoggedIn, profileCreateLimiter, validateUserProfile, async (req, res) => {
     try
     {
         const userId = req.user.userId;

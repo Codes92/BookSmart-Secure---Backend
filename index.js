@@ -14,6 +14,10 @@ app.use(cors({
 app.use(helmet());
 app.use(express.json());
 
+const {sanitizeBody} = require("./middleware/sanitizeMiddleware");
+app.use(sanitizeBody);
+
+
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 

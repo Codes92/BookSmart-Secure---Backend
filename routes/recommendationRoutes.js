@@ -4,11 +4,11 @@ const router = express.Router();
 
 const {isLoggedIn} = require("../middleware/authMiddleware");
 const { validateRecommendationID, validateUpdateRecommendation } = require("../middleware/recommendationMiddleware");
-
 const { deleteUserRecommendation, getAllUserRecommendations, getUserRecommendation, updateUserRecommendationStatus, createBookRecommendation } = require("../services/recommendationService");
+const { recommendationLimiter } = require("../middleware/rateLimiter");
 
 
-router.post("/", isLoggedIn, async (req, res) => {
+router.post("/", isLoggedIn, recommendationLimiter, async (req, res) => {
     try
     {
         const userId = req.user.userId;

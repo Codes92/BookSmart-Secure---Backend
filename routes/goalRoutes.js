@@ -4,10 +4,10 @@ const router = express.Router();
 
 const {isLoggedIn} = require("../middleware/authMiddleware");
 const { validateCreateGoal, validateUpdateGoal } = require("../middleware/goalMiddleware");
-
 const { createGoal, getUserGoals, getGoalsByStatus, updateGoal, deleteGoal } = require("../services/goalService");
+const { goalCreateLimiter } = require("../middleware/rateLimiter");
 
-router.post("/", isLoggedIn, validateCreateGoal, async (req, res) => {
+router.post("/", isLoggedIn, goalCreateLimiter, validateCreateGoal, async (req, res) => {
     try
     {
         const userId = req.user.userId;

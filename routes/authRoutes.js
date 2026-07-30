@@ -6,7 +6,7 @@ const { validateRegistration, validateLogin } = require("../middleware/userMiddl
 const { isLoggedIn, validatePasswordChange } = require("../middleware/authMiddleware");
 
 const { registerUser, loginUser, deleteUserAccount, changePassword } = require("../services/authService");
-const { registrationLimiter } = require("../middleware/rateLimiter");
+const { registrationLimiter, passwordChangeLimiter, accountDeleteLimiter } = require("../middleware/rateLimiter");
 
 
 // Import services and middleware functions
@@ -84,7 +84,7 @@ router.get('/me', isLoggedIn, async (req, res) => {
 
 // ================== Delete ===================
 // =============================================
-router.delete("/account", isLoggedIn, async(req, res) => {
+router.delete("/account", isLoggedIn, accountDeleteLimiter, async(req, res) => {
     try
     {
         await deleteUserAccount(req.user.user_id);
@@ -105,7 +105,7 @@ router.delete("/account", isLoggedIn, async(req, res) => {
 
 // ================== Change Password ===================
 // ======================================================
-router.patch("/password", isLoggedIn, validatePasswordChange, async(req, res) => {
+router.patch("/password", isLoggedIn, passwordChangeLimiter, validatePasswordChange, async(req, res) => {
     try
     {
         const userId = req.user.userId;
