@@ -8,7 +8,7 @@ const app = express();
 const port = process.env.PORT || 8081;
 
 app.use(cors({
-    origin: 'https://booksmartsec-application-frontend.vercel.app',
+    origin: 'https://book-smart-secure-frontend.vercel.app',
     credentials: true
 }));
 app.use(helmet());
