@@ -19,5 +19,4 @@ Email validation uses layered checks - format, disposable domain detection, and 
 Passwords are validated against OWASP length guidelines and checked against HIBP breach database using k-anonymity
 
 # Demo video below
-https://github.com/user-attachments/assets/66bc49dd-4200-4d4d-a74d-1a5d1d1c2edb
 
